@@ -14,7 +14,7 @@ export default function CreateOrder() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const newOrder = { title, description, price, category, deadline, clientId: user.id };
+    const newOrder = { title, description, price, category, deadline, clientId: user.id, freelancerId: null };
 
     fetch("http://localhost:3001/orders", {
       method: "POST",

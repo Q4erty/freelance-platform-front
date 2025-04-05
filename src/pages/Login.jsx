@@ -18,6 +18,14 @@ export default function Login() {
     }
   }
 
+  const loadAllOrders = async () => {
+    const response = await fetch('http://localhost:3001/orders');
+    const data = await response.json();
+    if (data.length > 0) {
+      dispatch(setOrders(data));
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -27,7 +35,9 @@ export default function Login() {
       const user = users[0];
 
       if (user) {
-        console.log(user);
+        if (user.role === 'admin' || user.role === 'freelancer') loadAllOrders();
+        else if (user.role === 'client') loadOrders(user.id);
+
         dispatch(login(user));
         loadOrders(user.id);
         navigate('/dashboard');

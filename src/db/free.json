@@ -1,137 +1,77 @@
 {
   "users": [
     {
-      "id": "1",
+      "id": "1a2b",
       "name": "Azamat",
       "email": "azamat@google.com",
       "role": "admin",
       "password": "azamat123"
     },
     {
-      "id": "2",
+      "id": "2b3c",
       "name": "Erik",
       "email": "erik@google.com",
       "role": "client",
       "password": "erik123"
     },
     {
-      "id": "3",
+      "id": "3c4d",
       "name": "Aliya",
       "email": "aliya@google.com",
       "role": "freelancer",
       "password": "aliya123"
-    },
-    {
-      "id": "3a5b",
-      "name": "Nurtas",
-      "email": "nurtas@test.com",
-      "role": "client",
-      "password": "password"
-    },
-    {
-      "id": "3c4a",
-      "name": "Islam",
-      "email": "islam123115@gmail.com",
-      "role": "client",
-      "password": "Game1234"
-    },
-    {
-      "id": "1c59",
-      "name": "is",
-      "email": "is@gmail.com",
-      "role": "client",
-      "password": "game1234"
     }
   ],
   "orders": [
     {
-      "id": "1",
-      "title": "Create landing page",
-      "description": "Need a simple landing page in React",
-      "clientId": "2",
-      "freelancerId": null,
-      "status": "open"
-    },
-    {
-      "id": "2",
-      "title": "Design a logo",
-      "description": "Modern logo for tech startup",
-      "clientId": "2",
-      "freelancerId": 3,
-      "status": "in progress"
-    },
-    {
-      "id": "93c5",
-      "title": "Create something",
-      "description": "create something",
+      "id": "a1b2",
+      "title": "Create Landing Page",
+      "description": "Need a responsive landing page built with React",
       "price": "20000",
-      "category": "creating",
-      "deadline": "2025-04-16",
-      "clientId": "2",
-      "status": "open"
-    },
-    {
-      "id": "1c0c",
-      "title": "dfgvbhnj",
-      "description": "dxgcfvh",
-      "price": "4567",
-      "category": "dxcfghj",
+      "category": "Web Development",
       "deadline": "2025-04-30",
-      "clientId": "2"
+      "clientId": "2b3c",
+      "freelancerId": "3c4d"
     },
     {
-      "id": "d6ef",
-      "title": "sdcsdkj",
-      "description": "jkdscjdsn",
-      "price": "32773",
-      "category": "jnvdfjvnfd",
-      "deadline": "2025-04-24",
-      "clientId": "2"
+      "id": "c3d4",
+      "title": "Design Logo",
+      "description": "Logo design for a mobile app startup",
+      "price": "10000",
+      "category": "Graphic Design",
+      "deadline": "2025-05-05",
+      "clientId": "2b3c",
+      "freelancerId": null
     },
     {
-      "id": "5a6f",
-      "title": "sdcsdkj",
-      "description": "jkdscjdsn",
-      "price": "32773",
-      "category": "jnvdfjvnfd",
-      "deadline": "2025-04-24",
-      "clientId": "2"
+      "id": "e5f6",
+      "title": "SEO Optimization",
+      "description": "Improve Google ranking for blog site",
+      "price": "15000",
+      "category": "Marketing",
+      "deadline": "2025-05-10",
+      "clientId": "2b3c",
+      "freelancerId": null
     },
     {
-      "id": "a430",
-      "title": "nmdfvjnj",
-      "description": "jkcsbdcubr",
-      "price": "532788",
-      "category": "djfvdkj",
-      "deadline": "2025-04-23",
-      "clientId": "2"
+      "id": "g7h8",
+      "title": "Backend API",
+      "description": "Create a REST API for a social network",
+      "price": "40000",
+      "category": "Backend",
+      "deadline": "2025-05-20",
+      "clientId": "2b3c",
+      "freelancerId": null
     },
     {
-      "id": "83c2",
-      "title": "mkmklrkefkerng",
-      "description": "kndnvfvndjn",
-      "price": "564738",
-      "category": "jndcsjdkc",
-      "deadline": "2025-04-25",
-      "clientId": "2"
-    },
-    {
-      "id": "5f14",
-      "title": "Carsharing",
-      "description": "Carsharig program platform ",
-      "price": "100000000000000",
-      "category": "Fulstack",
-      "deadline": "2025-04-05",
-      "clientId": "1c59"
-    }
-  ],
-  "applications": [
-    {
-      "id": "1",
-      "orderId": 1,
-      "freelancerId": 3,
-      "message": "I can deliver it in 2 days.",
-      "price": 200
+      "id": "i9j0",
+      "title": "Mobile App UI",
+      "description": "Create modern UI in Figma for mobile finance app",
+      "price": "25000",
+      "category": "UI/UX Design",
+      "deadline": "2025-05-01",
+      "clientId": "2b3c",
+      "freelancerId": null
     }
   ]
 }

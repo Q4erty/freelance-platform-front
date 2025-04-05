@@ -28,6 +28,12 @@ const dataReducer = (state = initialState, action) => {
         ],
       };
 
+    case 'DELETE_ORDER':
+      return {
+        ...state,
+        orders: state.orders.filter(order => order.id !== action.payload),
+      };
+
     case 'LOGOUT':
       return initialState;
 
@@ -41,6 +47,11 @@ export default dataReducer;
 export const setOrders = (orders) => ({
   type: 'SET_ORDERS',
   payload: orders,
+});
+
+export const deleteOrder = (orderId) => ({
+  type: 'DELETE_ORDER',
+  payload: orderId,
 });
 
 export const selectOrdersByCreator = (state, creatorId) => 

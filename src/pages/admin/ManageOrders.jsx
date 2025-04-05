@@ -1,13 +1,19 @@
 import { useSelector, useDispatch } from 'react-redux';
+import { deleteOrder } from '../../redux/dataSlice';
 
 export default function ManageOrders() {
-  const orders = useSelector((state) => state.orders);
+  const orders = useSelector((state) => state.data.orders);
   const dispatch = useDispatch();
 
   return (
     <div className='page'>
-      <h2>Manage Orders</h2>
-      <p>Admin can see, edit, or delete all orders here.</p>
+      {orders.map((order) => (
+        <div key={order.id} className='order'>
+          <h2>Order ID: {order.id}</h2>
+          <p>Status: {order.freelancerId ? "pending" : "free"}</p>
+          <button onClick={() => dispatch(deleteOrder(order.id))}>Delete Order</button>
+        </div>
+      ))}
     </div>
   );
 }
