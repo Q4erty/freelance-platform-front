@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { login, logout } from '../redux/authSlice';
 import { useNavigate } from 'react-router-dom';
-import usersData from '../free.json';
+import { setOrders } from '../redux/dataSlice'
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -10,12 +10,30 @@ export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const loadOrders = async (id) => {
+    const response = await fetch(`http://localhost:3001/orders?clientId=${id}`);
+    const data = await response.json();
+    if (data.length > 0) {
+      dispatch(setOrders(data));
+    }
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const user = usersData.users.find((u) => u.email === email && u.password === password);
-    if (user) {
-      dispatch(login(user));
-      navigate('/dashboard');
+
+    const userData = await fetch(`http://localhost:3001/users?email=${email}&password=${password}`);
+    if (userData.ok) {
+      const users = await userData.json();
+      const user = users[0];
+
+      if (user) {
+        console.log(user);
+        dispatch(login(user));
+        loadOrders(user.id);
+        navigate('/dashboard');
+      } else {
+        alert('Invalid credentials');
+      }
     } else {
       alert('Invalid credentials');
     }

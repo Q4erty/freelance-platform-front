@@ -8,10 +8,21 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    alert('Registration successful (mock)');
-    navigate('/login');
+
+    const registerUser = await fetch('http://localhost:3001/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, role, password }),
+    });
+    if (registerUser.ok) {
+      alert('Registration successful');
+      navigate('/login');
+    } else {
+      alert('Registration failed');
+    }
+
   };
 
   return (

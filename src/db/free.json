@@ -1,0 +1,137 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Azamat",
+      "email": "azamat@google.com",
+      "role": "admin",
+      "password": "azamat123"
+    },
+    {
+      "id": "2",
+      "name": "Erik",
+      "email": "erik@google.com",
+      "role": "client",
+      "password": "erik123"
+    },
+    {
+      "id": "3",
+      "name": "Aliya",
+      "email": "aliya@google.com",
+      "role": "freelancer",
+      "password": "aliya123"
+    },
+    {
+      "id": "3a5b",
+      "name": "Nurtas",
+      "email": "nurtas@test.com",
+      "role": "client",
+      "password": "password"
+    },
+    {
+      "id": "3c4a",
+      "name": "Islam",
+      "email": "islam123115@gmail.com",
+      "role": "client",
+      "password": "Game1234"
+    },
+    {
+      "id": "1c59",
+      "name": "is",
+      "email": "is@gmail.com",
+      "role": "client",
+      "password": "game1234"
+    }
+  ],
+  "orders": [
+    {
+      "id": "1",
+      "title": "Create landing page",
+      "description": "Need a simple landing page in React",
+      "clientId": "2",
+      "freelancerId": null,
+      "status": "open"
+    },
+    {
+      "id": "2",
+      "title": "Design a logo",
+      "description": "Modern logo for tech startup",
+      "clientId": "2",
+      "freelancerId": 3,
+      "status": "in progress"
+    },
+    {
+      "id": "93c5",
+      "title": "Create something",
+      "description": "create something",
+      "price": "20000",
+      "category": "creating",
+      "deadline": "2025-04-16",
+      "clientId": "2",
+      "status": "open"
+    },
+    {
+      "id": "1c0c",
+      "title": "dfgvbhnj",
+      "description": "dxgcfvh",
+      "price": "4567",
+      "category": "dxcfghj",
+      "deadline": "2025-04-30",
+      "clientId": "2"
+    },
+    {
+      "id": "d6ef",
+      "title": "sdcsdkj",
+      "description": "jkdscjdsn",
+      "price": "32773",
+      "category": "jnvdfjvnfd",
+      "deadline": "2025-04-24",
+      "clientId": "2"
+    },
+    {
+      "id": "5a6f",
+      "title": "sdcsdkj",
+      "description": "jkdscjdsn",
+      "price": "32773",
+      "category": "jnvdfjvnfd",
+      "deadline": "2025-04-24",
+      "clientId": "2"
+    },
+    {
+      "id": "a430",
+      "title": "nmdfvjnj",
+      "description": "jkcsbdcubr",
+      "price": "532788",
+      "category": "djfvdkj",
+      "deadline": "2025-04-23",
+      "clientId": "2"
+    },
+    {
+      "id": "83c2",
+      "title": "mkmklrkefkerng",
+      "description": "kndnvfvndjn",
+      "price": "564738",
+      "category": "jndcsjdkc",
+      "deadline": "2025-04-25",
+      "clientId": "2"
+    },
+    {
+      "id": "5f14",
+      "title": "Carsharing",
+      "description": "Carsharig program platform ",
+      "price": "100000000000000",
+      "category": "Fulstack",
+      "deadline": "2025-04-05",
+      "clientId": "1c59"
+    }
+  ],
+  "applications": [
+    {
+      "id": "1",
+      "orderId": 1,
+      "freelancerId": 3,
+      "message": "I can deliver it in 2 days.",
+      "price": 200
+    }
+  ]
+}

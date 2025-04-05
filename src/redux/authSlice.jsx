@@ -1,6 +1,4 @@
-const initialState = {
-  user: null
-};
+const initialState = { user: null };
 
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -13,13 +11,7 @@ const authReducer = (state = initialState, action) => {
   }
 };
 
-export const login = (user) => ({
-  type: 'LOGIN',
-  payload: user
-});
-
-export const logout = () => ({
-  type: 'LOGOUT'
-});
-
 export default authReducer;
+
+export const login = (user) => ({ type: "LOGIN", payload: user });
+export const logout = () => ({ type: "LOGOUT" });
