@@ -1,12 +1,12 @@
 const initialState = {
-  user: null,
+  user: null
 };
 
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
-    case "LOGIN":
+    case 'LOGIN':
       return { ...state, user: action.payload };
-    case "LOGOUT":
+    case 'LOGOUT':
       return { ...state, user: null };
     default:
       return state;
@@ -14,12 +14,12 @@ const authReducer = (state = initialState, action) => {
 };
 
 export const login = (user) => ({
-  type: "LOGIN",
-  payload: user,
+  type: 'LOGIN',
+  payload: user
 });
 
 export const logout = () => ({
-  type: "LOGOUT",
+  type: 'LOGOUT'
 });
 
 export default authReducer;
