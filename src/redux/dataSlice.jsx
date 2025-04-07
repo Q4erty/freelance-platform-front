@@ -7,7 +7,7 @@ const dataReducer = (state = initialState, action) => {
     case 'SET_ORDERS':
       return {
         ...state,
-        orders: [...state.orders, ...action.payload],
+        orders: action.payload,
       };
 
     case 'TAKE_ORDER':

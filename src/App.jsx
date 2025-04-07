@@ -10,7 +10,6 @@ import MyOrders from './pages/client/MyOrders';
 import CreateOrder from './pages/client/CreateOrder';
 import AllOrders from './pages/freelancer/AllOrders';
 import MyApplications from './pages/freelancer/MyApplications';
-import './App.css';
 
 export default function App() {
   const user = useSelector((state) => state.auth.user);

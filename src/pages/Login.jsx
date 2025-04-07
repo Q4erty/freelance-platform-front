@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { login, logout } from '../redux/authSlice';
+import { login } from '../redux/authSlice';
 import { useNavigate } from 'react-router-dom';
-import { setOrders } from '../redux/dataSlice'
+import { setOrders } from '../redux/dataSlice';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -16,7 +16,7 @@ export default function Login() {
     if (data.length > 0) {
       dispatch(setOrders(data));
     }
-  }
+  };
 
   const loadAllOrders = async () => {
     const response = await fetch('http://localhost:3001/orders');
@@ -24,7 +24,7 @@ export default function Login() {
     if (data.length > 0) {
       dispatch(setOrders(data));
     }
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,11 +35,13 @@ export default function Login() {
       const user = users[0];
 
       if (user) {
-        if (user.role === 'admin' || user.role === 'freelancer') loadAllOrders();
-        else if (user.role === 'client') loadOrders(user.id);
+        if (user.role === 'admin' || user.role === 'freelancer') {
+          await loadAllOrders();
+        } else if (user.role === 'client') {
+          await loadOrders(user.id);
+        }
 
         dispatch(login(user));
-        loadOrders(user.id);
         navigate('/dashboard');
       } else {
         alert('Invalid credentials');
@@ -50,19 +52,37 @@ export default function Login() {
   };
 
   return (
-    <div className='page'>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit} className='auth-form'>
-        <input type='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input
-          type='password'
-          placeholder='Password'
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type='submit'>Login</button>
-      </form>
+    <div className='page d-flex justify-content-center align-items-center' style={{ minHeight: '80vh'}}>
+      <div className='card' style={{ maxWidth: '400px', width: '100%' }}>
+        <div className='card-body'>
+          <h2 className='text-center mb-4'>Login</h2>
+          <form onSubmit={handleSubmit}>
+            <div className='mb-3'>
+              <input
+                type='email'
+                placeholder='Email'
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className='form-control'
+              />
+            </div>
+            <div className='mb-3'>
+              <input
+                type='password'
+                placeholder='Password'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className='form-control'
+              />
+            </div>
+            <button type='submit' className='btn btn-primary w-100'>
+              Login
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

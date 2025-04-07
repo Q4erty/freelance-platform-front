@@ -51,7 +51,7 @@
       "category": "Marketing",
       "deadline": "2025-05-10",
       "clientId": "2b3c",
-      "freelancerId": null
+      "freelancerId": "3c4d"
     },
     {
       "id": "g7h8",
@@ -71,7 +71,7 @@
       "category": "UI/UX Design",
       "deadline": "2025-05-01",
       "clientId": "2b3c",
-      "freelancerId": null
+      "freelancerId": "3c4d"
     }
   ]
 }
