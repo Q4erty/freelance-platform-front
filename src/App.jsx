@@ -10,6 +10,7 @@ import MyOrders from './pages/client/MyOrders';
 import CreateOrder from './pages/client/CreateOrder';
 import AllOrders from './pages/freelancer/AllOrders';
 import MyApplications from './pages/freelancer/MyApplications';
+import EditOrder from './pages/client/EditOrder';
 
 export default function App() {
   const user = useSelector((state) => state.auth.user);
@@ -37,6 +38,10 @@ export default function App() {
           <Route
             path='/client/create-order'
             element={user?.role === 'client' ? <CreateOrder /> : <Navigate to='/dashboard' />}
+          />
+          <Route
+            path='/client/edit-order/:id'
+            element={user?.role === 'client' ? <EditOrder /> : <Navigate to='/dashboard' />}
           />
 
           <Route

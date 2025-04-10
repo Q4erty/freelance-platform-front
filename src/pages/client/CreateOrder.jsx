@@ -53,7 +53,7 @@ export default function CreateOrder() {
               required
             />
           </div>
-  
+
           <div className='mb-3'>
             <label className='form-label'>Description</label>
             <textarea
@@ -64,7 +64,7 @@ export default function CreateOrder() {
               required
             />
           </div>
-  
+
           <div className='mb-3'>
             <label className='form-label'>Price (KZT)</label>
             <input
@@ -75,7 +75,7 @@ export default function CreateOrder() {
               required
             />
           </div>
-  
+
           <div className='mb-3'>
             <label className='form-label'>Category</label>
             <input
@@ -85,7 +85,7 @@ export default function CreateOrder() {
               onChange={(e) => setCategory(e.target.value)}
             />
           </div>
-  
+
           <div className='mb-4'>
             <label className='form-label'>Deadline</label>
             <input
@@ -95,12 +95,12 @@ export default function CreateOrder() {
               onChange={(e) => setDeadline(e.target.value)}
             />
           </div>
-  
+
           <button type='submit' className='btn btn-primary w-100 btn-lg'>
             Create Order
           </button>
         </form>
       </div>
     </div>
-  );  
+  );
 }

@@ -6,8 +6,6 @@ import '../App.css';
 export default function Dashboard() {
   const user = useSelector((state) => state.auth.user);
 
-  if (!user) return <Navigate to='/login' />;
-
   return (
     <div className='dashboard'>
       <h2>Your Success Platform</h2>

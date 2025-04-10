@@ -11,19 +11,18 @@ export default function AllOrders() {
       const response = await fetch(`http://localhost:3001/orders/${orderId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ freelancerId: user.id }),
+        body: JSON.stringify({ freelancerId: user.id })
       });
 
-      if (!response.ok) throw new Error();
-
-      const updatedOrder = await response.json();
-      const updatedOrders = orders.map((order) =>
-        order.id === updatedOrder.id ? updatedOrder : order
-      );
-      dispatch(setOrders(updatedOrders));
-      alert('Order claimed successfully!');
+      if (response.ok) {
+        const updatedOrder = await response.json();
+        const updatedOrders = orders.map((order) => (order.id === updatedOrder.id ? updatedOrder : order));
+        dispatch(setOrders(updatedOrders));
+      } else {
+        console.log('AllOrders.jsx failed to claim order');
+      }
     } catch (err) {
-      alert('Failed to claim order');
+      alert('AllOrders.jsx failed to claim order');
     }
   };
 
@@ -40,16 +39,13 @@ export default function AllOrders() {
                   <h5 className='card-title text-primary'>{order.title}</h5>
                   <h6 className='card-subtitle mb-2 text-muted'>Category: {order.category}</h6>
                   <p className='card-text flex-grow-1'>{order.description}</p>
+                </div>
+                <div className='card-footer'>
                   <div className='d-flex justify-content-between align-items-center mt-auto'>
                     <span className='fw-bold text-success'>{order.price} KZT</span>
-                    <span className='text-muted'>Deadline: {new Date(order.deadline).toLocaleDateString()}</span>
+                    <span className='text-muted'>Deadline: {order.deadline}</span>
                   </div>
-                </div>
-                <div className='card-body'>
-                  <button
-                    className='btn btn-success w-100 mt-3'
-                    onClick={() => handleGetOrder(order.id)}
-                  >
+                  <button className='btn btn-outline-success w-100 mt-4' onClick={() => handleGetOrder(order.id)}>
                     Get Order
                   </button>
                 </div>

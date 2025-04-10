@@ -27,21 +27,11 @@
       "id": "a1b2",
       "title": "Create Landing Page",
       "description": "Need a responsive landing page built with React",
-      "price": "20000",
+      "price": "10000",
       "category": "Web Development",
       "deadline": "2025-04-30",
       "clientId": "2b3c",
       "freelancerId": "3c4d"
-    },
-    {
-      "id": "c3d4",
-      "title": "Design Logo",
-      "description": "Logo design for a mobile app startup",
-      "price": "10000",
-      "category": "Graphic Design",
-      "deadline": "2025-05-05",
-      "clientId": "2b3c",
-      "freelancerId": null
     },
     {
       "id": "e5f6",
@@ -49,9 +39,9 @@
       "description": "Improve Google ranking for blog site",
       "price": "15000",
       "category": "Marketing",
-      "deadline": "2025-05-10",
+      "deadline": "2025-05-16",
       "clientId": "2b3c",
-      "freelancerId": "3c4d"
+      "freelancerId": null
     },
     {
       "id": "g7h8",
