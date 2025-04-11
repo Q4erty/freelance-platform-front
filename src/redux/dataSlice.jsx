@@ -11,17 +11,11 @@ const dataReducer = (state = initialState, action) => {
       };
 
     case 'TAKE_ORDER':
-      const orderIndex = state.orders.findIndex((order) => order.id === action.payload.orderId);
-      if (orderIndex === -1) return state;
-
-      const updatedOrder = {
-        ...state.orders[orderIndex],
-        takenBy: action.payload.userId
-      };
-
       return {
         ...state,
-        orders: [...state.orders.slice(0, orderIndex), updatedOrder, ...state.orders.slice(orderIndex + 1)]
+        orders: state.orders.map((order) =>
+          order.id === action.payload.orderId ? { ...order, takenBy: action.payload.userId } : order
+        )
       };
 
     case 'UPDATE_ORDER':
@@ -60,10 +54,3 @@ export const deleteOrder = (orderId) => ({
   type: 'DELETE_ORDER',
   payload: orderId
 });
-
-export const selectOrdersByCreator = (state, creatorId) =>
-  state.data.orders.filter((order) => order.clientId === creatorId);
-
-export const selectOrdersByExecutor = (state, userId) => state.data.orders.filter((order) => order.takenBy === userId);
-
-export const selectAvailableOrders = (state) => state.data.orders.filter((order) => !order.takenBy);

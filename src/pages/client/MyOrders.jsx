@@ -1,5 +1,4 @@
 import { useSelector } from 'react-redux';
-import { selectOrdersByCreator } from '../../redux/dataSlice';
 import { useDispatch } from 'react-redux';
 import { deleteOrder } from '../../redux/dataSlice';
 import { Link } from 'react-router-dom';
@@ -8,7 +7,7 @@ export default function MyOrders() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const creatorId = user.id;
-  const creatorOrders = useSelector((state) => selectOrdersByCreator(state, creatorId));
+  const creatorOrders = useSelector((state) => state.data.orders.filter((order) => order.clientId === creatorId));
 
   const handleDelete = async (orderId) => {
     try {
@@ -17,10 +16,9 @@ export default function MyOrders() {
       });
       if (response.ok) {
         dispatch(deleteOrder(orderId));
-        alert('Order deleted successfully');
       }
     } catch (error) {
-      alert('Error deleting order');
+      console.log('MyOrders.jsx errored deleting order');
     }
   };
 

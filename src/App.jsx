@@ -24,7 +24,7 @@ export default function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
 
-          <Route path='/dashboard' element={user ? <Dashboard /> : <Navigate to='/login' />} />
+          <Route path='/dashboard' element={<Dashboard />} />
 
           <Route
             path='/admin/manage-orders'
@@ -41,7 +41,7 @@ export default function App() {
           />
           <Route
             path='/client/edit-order/:id'
-            element={user?.role === 'client' ? <EditOrder /> : <Navigate to='/dashboard' />}
+            element={user?.role === 'client' || 'admin' ? <EditOrder /> : <Navigate to='/dashboard' />}
           />
 
           <Route

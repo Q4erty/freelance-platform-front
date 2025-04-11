@@ -1,15 +1,19 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 import { setOrders } from '../../redux/dataSlice';
+import { useNavigate } from 'react-router-dom';
+
 
 export default function CreateOrder() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+  const orders = useSelector((state) => state.data.orders);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
   const [deadline, setDeadline] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -31,8 +35,8 @@ export default function CreateOrder() {
     })
       .then((res) => res.json())
       .then((order) => {
-        dispatch(setOrders([order]));
-        alert('Order created successfully!');
+        dispatch(setOrders([...orders, order]));
+        navigate('/client/my-orders');
       });
   };
 

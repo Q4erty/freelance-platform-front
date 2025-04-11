@@ -8,6 +8,7 @@ export default function EditOrder() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const order = useSelector((state) => state.data.orders.find((order) => order.id === id));
+  const user = useSelector((state) => state.auth.user);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -20,11 +21,11 @@ export default function EditOrder() {
   useEffect(() => {
     if (order) {
       setFormData({
-        title: order.title || '',
-        description: order.description || '',
-        price: order.price || '',
-        category: order.category || '',
-        deadline: order.deadline || ''
+        title: order.title,
+        description: order.description,
+        price: order.price,
+        category: order.category,
+        deadline: order.deadline
       });
     }
   }, [order]);
@@ -50,7 +51,12 @@ export default function EditOrder() {
       if (response.ok) {
         const updatedOrder = await response.json();
         dispatch(updateOrder(updatedOrder));
-        navigate('/client/my-orders');
+        if (user.role === 'client') {
+          navigate('/client/my-orders');
+        } else {
+          navigate('/admin/manage-orders');
+        }
+        
       }
     } catch (err) {
       console.assert.log('EditOrder.jsx errored updating order');

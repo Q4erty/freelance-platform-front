@@ -20,6 +20,20 @@
       "email": "aliya@google.com",
       "role": "freelancer",
       "password": "aliya123"
+    },
+    {
+      "id": "9982",
+      "name": "islam",
+      "email": "islam@gmail.com",
+      "role": "client",
+      "password": "123"
+    },
+    {
+      "id": "df92",
+      "name": "islam12",
+      "email": "islam1@gmail.com",
+      "role": "freelancer",
+      "password": "123"
     }
   ],
   "orders": [
@@ -51,7 +65,7 @@
       "category": "Backend",
       "deadline": "2025-05-20",
       "clientId": "2b3c",
-      "freelancerId": null
+      "freelancerId": "3c4d"
     },
     {
       "id": "i9j0",
@@ -61,7 +75,7 @@
       "category": "UI/UX Design",
       "deadline": "2025-05-01",
       "clientId": "2b3c",
-      "freelancerId": "3c4d"
+      "freelancerId": null
     }
   ]
 }

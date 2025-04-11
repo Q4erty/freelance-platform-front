@@ -15,7 +15,7 @@ export default function ManageOrders() {
         dispatch(deleteOrder(orderId));
       }
     } catch (error) {
-      console.log("ManageOrders.jsx deleteOrder error: ", error);
+      console.log("ManageOrders.jsx deleteOrder error");
     }
   };
 
