@@ -22,18 +22,18 @@
       "password": "aliya123"
     },
     {
-      "id": "9982",
-      "name": "islam",
-      "email": "islam@gmail.com",
+      "id": "43d8",
+      "name": "aza",
+      "email": "aza@gmail.com",
       "role": "client",
-      "password": "123"
+      "password": "aza"
     },
     {
-      "id": "df92",
-      "name": "islam12",
-      "email": "islam1@gmail.com",
+      "id": "43d9",
+      "name": "aza2",
+      "email": "aza2@gmail.com",
       "role": "freelancer",
-      "password": "123"
+      "password": "aza2"
     }
   ],
   "orders": [
@@ -58,16 +58,6 @@
       "freelancerId": null
     },
     {
-      "id": "g7h8",
-      "title": "Backend API",
-      "description": "Create a REST API for a social network",
-      "price": "40000",
-      "category": "Backend",
-      "deadline": "2025-05-20",
-      "clientId": "2b3c",
-      "freelancerId": "3c4d"
-    },
-    {
       "id": "i9j0",
       "title": "Mobile App UI",
       "description": "Create modern UI in Figma for mobile finance app",
@@ -76,6 +66,16 @@
       "deadline": "2025-05-01",
       "clientId": "2b3c",
       "freelancerId": null
+    },
+    {
+      "id": "fc51",
+      "title": "Lms system for Narxoz",
+      "description": "asdasd asdad ad asd asd s asda dad as d",
+      "price": "2000001",
+      "category": "Web dev",
+      "deadline": "2025-04-12",
+      "clientId": "43d8",
+      "freelancerId": "43d9"
     }
   ]
 }

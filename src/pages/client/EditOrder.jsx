@@ -59,7 +59,7 @@ export default function EditOrder() {
         
       }
     } catch (err) {
-      console.assert.log('EditOrder.jsx errored updating order');
+      console.log('EditOrder.jsx errored updating order');
     }
   };
 
