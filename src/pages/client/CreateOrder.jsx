@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { setOrders } from '../../redux/dataSlice';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,6 +14,16 @@ export default function CreateOrder() {
   const [category, setCategory] = useState('');
   const [deadline, setDeadline] = useState('');
   const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      const res = await fetch('http://localhost:3001/categories');
+      const data = await res.json();
+      setCategories(data);
+    };
+    loadCategories();
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -82,12 +92,17 @@ export default function CreateOrder() {
 
           <div className='mb-3'>
             <label className='form-label'>Category</label>
-            <input
-              type='text'
+            <select
               className='form-control form-control-lg'
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-            />
+              required
+            >
+              <option value="">Select Category</option>
+              {categories.map(c => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
           </div>
 
           <div className='mb-4'>

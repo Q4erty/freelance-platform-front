@@ -11,6 +11,7 @@ import CreateOrder from './pages/client/CreateOrder';
 import AllOrders from './pages/freelancer/AllOrders';
 import MyApplications from './pages/freelancer/MyApplications';
 import EditOrder from './pages/client/EditOrder';
+import ManageCategories from './pages/admin/ManageCategories';
 
 export default function App() {
   const user = useSelector((state) => state.auth.user);
@@ -41,7 +42,7 @@ export default function App() {
           />
           <Route
             path='/client/edit-order/:id'
-            element={user?.role === 'client' || 'admin' ? <EditOrder /> : <Navigate to='/dashboard' />}
+            element={user?.role === 'client' || user?.role === 'admin' ? <EditOrder /> : <Navigate to='/dashboard' />}
           />
 
           <Route
@@ -51,6 +52,10 @@ export default function App() {
           <Route
             path='/freelancer/my-applications'
             element={user?.role === 'freelancer' ? <MyApplications /> : <Navigate to='/dashboard' />}
+          />
+          <Route
+            path='/admin/manage-categories'
+            element={user?.role === 'admin' ? <ManageCategories /> : <Navigate to='/dashboard' />}
           />
         </Routes>
       </div>

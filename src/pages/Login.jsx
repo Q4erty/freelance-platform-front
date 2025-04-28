@@ -1,14 +1,30 @@
-import { use, useContext, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { login } from '../redux/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { setOrders } from '../redux/dataSlice';
+import { toast } from 'react-toastify';
+import { useEffect } from 'react';
+import { setCategories } from '../redux/categorySlice';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const res = await fetch('http://localhost:3001/categories');
+        const data = await res.json();
+        dispatch(setCategories(data));
+      } catch (err) {
+        console.error('Failed to load categories');
+      }
+    };
+    loadCategories();
+  }, [dispatch]);
 
   const loadOrders = async (id) => {
     const response = await fetch(`http://localhost:3001/orders?clientId=${id}`);
@@ -41,13 +57,14 @@ export default function Login() {
           await loadOrders(user.id);
         }
 
+        toast.success(`Welcome back, ${user.name}!`);
         dispatch(login(user));
         navigate('/dashboard');
       } else {
-        alert('Invalid credentials');
+        toast.error('Invalid credentials');
       }
     } else {
-      alert('Invalid credentials');
+      toast.error('Invalid credentials');
     }
   };
 

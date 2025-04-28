@@ -14,7 +14,7 @@ export default function Register() {
     const registerUser = await fetch('http://localhost:3001/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, role, password })
+      body: JSON.stringify({ name, email, role, password})
     });
 
     if (registerUser.ok) {

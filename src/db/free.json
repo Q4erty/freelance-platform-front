@@ -77,5 +77,13 @@
       "clientId": "43d8",
       "freelancerId": "43d9"
     }
+  ],
+  "categories": [
+    {"id": "1", "name": "Web Development"},
+    {"id": "2", "name": "Marketing"},
+    {"id": "3", "name": "UI/UX Design"}
+  ],
+  "applications": [
+    {"id": "1", "orderId": "a1b2", "freelancerId": "3c4d", "status": "pending"}
   ]
 }

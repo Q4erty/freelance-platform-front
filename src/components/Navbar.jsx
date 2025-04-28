@@ -52,11 +52,23 @@ export default function Navbar() {
                 </li>
 
                 {user.role === 'admin' && (
-                  <li className='nav-item'>
-                    <Link to='/admin/manage-orders' className='nav-link'>
-                      Manage Orders
-                    </Link>
-                  </li>
+                  <>
+                    <li className='nav-item'>
+                      <Link to='/admin/manage-orders' className='nav-link'>
+                        Manage Orders
+                      </Link>
+                    </li>
+                    <li className='nav-item'>
+                      <Link to='/admin/manage-orders' className='nav-link'>
+                        Manage Orders
+                      </Link>
+                    </li>
+                    <li className='nav-item'>
+                      <Link to='/admin/manage-categories' className='nav-link'>
+                        Manage Categories
+                      </Link>
+                    </li>
+                  </>
                 )}
 
                 {user.role === 'client' && (
