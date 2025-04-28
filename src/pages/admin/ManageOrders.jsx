@@ -1,10 +1,31 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { deleteOrder } from '../../redux/dataSlice';
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { setOrders } from '../../redux/dataSlice';
+import { setCategories } from '../../redux/categorySlice';
 
 export default function ManageOrders() {
   const orders = useSelector((state) => state.data.orders);
+  const categories = useSelector((state) => state.categories.categories); 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const ordersRes = await fetch('http://localhost:3001/orders');
+        const ordersData = await ordersRes.json();
+        dispatch(setOrders(ordersData));
+
+        const categoriesRes = await fetch('http://localhost:3001/categories');
+        const categoriesData = await categoriesRes.json();
+        dispatch(setCategories(categoriesData));
+      } catch (err) {
+        console.error('Loading error:', err);
+      }
+    };
+    loadData();
+  }, [dispatch]);
 
   const handleDelete = async (orderId) => {
     try {
@@ -28,7 +49,7 @@ export default function ManageOrders() {
             <div className='card h-100 shadow-sm'>
               <div className='card-body'>
                 <h5 className='card-title'>{order.title}</h5>
-                <h6 className='card-subtitle mb-2 text-muted'>Category: {order.category}</h6>
+                <h6 className='card-subtitle mb-2 text-muted'>Category: {categories.find(c => c.id === order.categoryId)?.name || 'Unknown'}</h6>
                 <span className={`badge ${order.freelancerId ? 'bg-warning text-dark' : 'bg-success'}`}>
                   {order.freelancerId ? 'Pending' : 'Available'}
                 </span>

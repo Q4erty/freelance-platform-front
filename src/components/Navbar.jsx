@@ -59,11 +59,6 @@ export default function Navbar() {
                       </Link>
                     </li>
                     <li className='nav-item'>
-                      <Link to='/admin/manage-orders' className='nav-link'>
-                        Manage Orders
-                      </Link>
-                    </li>
-                    <li className='nav-item'>
                       <Link to='/admin/manage-categories' className='nav-link'>
                         Manage Categories
                       </Link>

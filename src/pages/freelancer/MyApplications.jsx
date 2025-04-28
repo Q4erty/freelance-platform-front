@@ -1,11 +1,31 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { updateOrder } from '../../redux/dataSlice';
+import { useEffect } from 'react';
+import { setOrders } from '../../redux/dataSlice';
+import { setCategories } from '../../redux/categorySlice';
 
 export default function MyApplications() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const orders = useSelector((state) => state.data.orders);
   const applications = orders.filter((order) => order.freelancerId === user.id);
+
+  useEffect(() => {
+      const loadData = async () => {
+        try {
+          const ordersRes = await fetch('http://localhost:3001/orders');
+          const ordersData = await ordersRes.json();
+          dispatch(setOrders(ordersData));
+  
+          const categoriesRes = await fetch('http://localhost:3001/categories');
+          const categoriesData = await categoriesRes.json();
+          dispatch(setCategories(categoriesData));
+        } catch (err) {
+          console.error('Loading error:', err);
+        }
+      };
+      loadData();
+    }, [dispatch]);
 
   const handleCancel = async (orderId) => {
     try {

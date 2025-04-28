@@ -1,10 +1,30 @@
 import { useSelector, useDispatch } from 'react-redux';
+import { useEffect } from 'react';
 import { setOrders } from '../../redux/dataSlice';
+import { setCategories } from '../../redux/categorySlice';
 
 export default function AllOrders() {
   const dispatch = useDispatch();
   const orders = useSelector((state) => state.data.orders);
   const user = useSelector((state) => state.auth.user);
+  const categories = useSelector((state) => state.categories.categories);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const ordersRes = await fetch('http://localhost:3001/orders');
+        const ordersData = await ordersRes.json();
+        dispatch(setOrders(ordersData));
+
+        const categoriesRes = await fetch('http://localhost:3001/categories');
+        const categoriesData = await categoriesRes.json();
+        dispatch(setCategories(categoriesData));
+      } catch (err) {
+        console.error('Loading error:', err);
+      }
+    };
+    loadData();
+  }, [dispatch]);
 
   const handleGetOrder = async (orderId) => {
     try {
@@ -37,7 +57,7 @@ export default function AllOrders() {
               <div className='card h-100 shadow-sm'>
                 <div className='card-body d-flex flex-column'>
                   <h5 className='card-title text-primary'>{order.title}</h5>
-                  <h6 className='card-subtitle mb-2 text-muted'>Category: {order.category}</h6>
+                  <h6 className='card-subtitle mb-2 text-muted'>Category: {categories.find(c => c.id === order.categoryId)?.name || 'Unknown'}</h6>
                   <p className='card-text flex-grow-1'>{order.description}</p>
                 </div>
                 <div className='card-footer'>

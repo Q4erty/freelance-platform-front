@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { deleteOrder } from '../../redux/dataSlice';
+import { deleteOrder, setOrders } from '../../redux/dataSlice';
+import { setCategories } from '../../redux/categorySlice';
 import { Link } from 'react-router-dom';
 
 export default function MyOrders() {
@@ -10,11 +11,33 @@ export default function MyOrders() {
   const [selectedCategory, setSelectedCategory] = useState('');
 
   const categories = useSelector((state) => state.categories.categories);
-  
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const ordersRes = await fetch('http://localhost:3001/orders');
+        const ordersData = await ordersRes.json();
+        dispatch(setOrders(ordersData));
+
+        const categoriesRes = await fetch('http://localhost:3001/categories');
+        const categoriesData = await categoriesRes.json();
+        dispatch(setCategories(categoriesData));
+      } catch (err) {
+        console.error('Loading error:', err);
+      }
+    };
+    loadData();
+  }, [dispatch]);
+
   const creatorId = user?.id;
-  const creatorOrders = useSelector((state) => 
-    state.data.orders.filter((order) => order.clientId === creatorId)
+  const allOrders = useSelector((state) => state.data.orders);
+  console.log(allOrders);
+  const creatorOrders = allOrders.filter(order => 
+    order.clientId === creatorId && 
+    order.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (selectedCategory ? order.categoryId === selectedCategory : true)
   );
+  console.log(creatorOrders);
 
   const filteredOrders = creatorOrders.filter(order => {
     const matchesSearch = order.title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -64,7 +87,7 @@ export default function MyOrders() {
       </div>
       <h2 className='mb-4'>My Orders</h2>
       <div className='row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4'>
-        {filteredOrders.map((order) => ( // Используем filteredOrders вместо creatorOrders
+        {filteredOrders.map((order) => (
           <div key={order.id} className='col'>
             <div className='card h-100 shadow-sm'>
               <div className='card-body'>

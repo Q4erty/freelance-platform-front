@@ -9,6 +9,7 @@ export default function EditOrder() {
   const navigate = useNavigate();
   const order = useSelector((state) => state.data.orders.find((order) => order.id === id));
   const user = useSelector((state) => state.auth.user);
+  const categories = useSelector((state) => state.categories.categories);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -108,13 +109,18 @@ export default function EditOrder() {
 
           <div className='mb-3'>
             <label className='form-label'>Category</label>
-            <input
-              type='text'
-              name='category'
+            <select
+              name='categoryId'
               className='form-control form-control-lg'
-              value={formData.category}
+              value={formData.categoryId}
               onChange={handleChange}
-            />
+              required
+            >
+              <option value="">Select Category</option>
+              {categories.map(c => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
           </div>
 
           <div className='mb-4'>

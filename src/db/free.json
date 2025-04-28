@@ -23,14 +23,14 @@
     },
     {
       "id": "43d8",
-      "name": "aza",
+      "name": "Aza",
       "email": "aza@gmail.com",
       "role": "client",
       "password": "aza"
     },
     {
       "id": "43d9",
-      "name": "aza2",
+      "name": "Aza2",
       "email": "aza2@gmail.com",
       "role": "freelancer",
       "password": "aza2"
@@ -41,49 +41,90 @@
       "id": "a1b2",
       "title": "Create Landing Page",
       "description": "Need a responsive landing page built with React",
-      "price": "10000",
-      "category": "Web Development",
+      "price": 10000,
+      "categoryId": "1",
       "deadline": "2025-04-30",
       "clientId": "2b3c",
-      "freelancerId": "3c4d"
+      "freelancerId": "3c4d",
+      "attachments": []
     },
     {
       "id": "e5f6",
       "title": "SEO Optimization",
       "description": "Improve Google ranking for blog site",
-      "price": "15000",
-      "category": "Marketing",
+      "price": 15000,
+      "categoryId": "2",
       "deadline": "2025-05-16",
       "clientId": "2b3c",
-      "freelancerId": null
+      "freelancerId": null,
+      "attachments": []
     },
     {
       "id": "i9j0",
       "title": "Mobile App UI",
       "description": "Create modern UI in Figma for mobile finance app",
-      "price": "25000",
-      "category": "UI/UX Design",
+      "price": 25000,
+      "categoryId": "3",
       "deadline": "2025-05-01",
       "clientId": "2b3c",
-      "freelancerId": null
+      "freelancerId": null,
+      "attachments": []
     },
     {
       "id": "fc51",
-      "title": "Lms system for Narxoz",
-      "description": "asdasd asdad ad asd asd s asda dad as d",
-      "price": "2000001",
-      "category": "Web dev",
+      "title": "LMS System for Narxoz",
+      "description": "Learning management system development",
+      "price": 2000001,
+      "categoryId": "1",
       "deadline": "2025-04-12",
       "clientId": "43d8",
-      "freelancerId": "43d9"
+      "freelancerId": "43d9",
+      "attachments": []
     }
   ],
   "categories": [
-    {"id": "1", "name": "Web Development"},
-    {"id": "2", "name": "Marketing"},
-    {"id": "3", "name": "UI/UX Design"}
+    {
+      "id": "1",
+      "name": "Web Development",
+      "description": "Website and web application development"
+    },
+    {
+      "id": "2",
+      "name": "Marketing",
+      "description": "Digital marketing and SEO services"
+    },
+    {
+      "id": "3",
+      "name": "UI/UX Design",
+      "description": "User interface and experience design"
+    }
   ],
   "applications": [
-    {"id": "1", "orderId": "a1b2", "freelancerId": "3c4d", "status": "pending"}
+    {
+      "id": "app1",
+      "orderId": "a1b2",
+      "freelancerId": "3c4d",
+      "status": "accepted",
+      "proposal": "I can complete this project in 2 weeks",
+      "createdAt": "2023-03-15"
+    },
+    {
+      "id": "app2",
+      "orderId": "e5f6",
+      "freelancerId": "43d9",
+      "status": "pending",
+      "proposal": "I have 5 years SEO experience",
+      "createdAt": "2023-03-16"
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg1",
+      "orderId": "a1b2",
+      "senderId": "2b3c",
+      "receiverId": "3c4d",
+      "content": "When can you start?",
+      "timestamp": "2023-03-15T10:00:00Z"
+    }
   ]
 }
