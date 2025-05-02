@@ -1,5 +1,4 @@
-// src/pages/admin/ManageCategories.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCategories, addCategory, deleteCategory } from '../../redux/categorySlice';
 import { toast } from 'react-toastify';
@@ -7,14 +6,11 @@ import { toast } from 'react-toastify';
 export default function ManageCategories() {
   const dispatch = useDispatch();
   const { categories } = useSelector(state => state.categories);
-  const { token } = useSelector(state => state.auth);
   const [newCategory, setNewCategory] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    loadCategories();
-  }, []);
-
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
+    setIsLoading(true);
     try {
       const response = await fetch('http://localhost:8000/api/categories', {
         credentials: 'include',
@@ -23,8 +19,14 @@ export default function ManageCategories() {
       dispatch(setCategories(data));
     } catch (err) {
       toast.error('Failed to load categories');
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [dispatch]);
+
+  useEffect(() => {
+    loadCategories();
+  }, [loadCategories]);
 
   const handleAdd = async () => {
     if (!newCategory.trim()) {
@@ -73,46 +75,66 @@ export default function ManageCategories() {
 
   return (
     <div className="container my-4">
-      <h2>Manage Categories</h2>
+      <div className="admin-header">
+        <h2>Manage Categories</h2>
+      </div>
       
-      <div className="mb-4">
-        <div className="input-group">
-          <input
-            type="text"
-            className="form-control"
-            value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
-            placeholder="New category name"
-            minLength={3}
-            maxLength={50}
-          />
-          <button 
-            className="btn btn-primary" 
-            onClick={handleAdd}
-            disabled={!newCategory.trim()}
-          >
-            Add Category
-          </button>
+      <div className="card mb-4 shadow-sm">
+        <div className="card-body">
+          <div className="form-group">
+            <label className="form-label">Add New Category</label>
+            <div className="d-flex align-items-center gap-2">
+              <input
+                type="text"
+                className="form-control py-2"
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                placeholder="Enter category name"
+                minLength={3}
+                maxLength={50}
+                style={{ height: '38px' }}
+              />
+              <button 
+                className="btn btn-primary py-2"
+                onClick={handleAdd}
+                disabled={!newCategory.trim() || isLoading}
+                style={{ height: '38px', marginTop: 0 }}
+              >
+                {isLoading ? 'Adding...' : 'Add Category'}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="list-group">
-        {categories.map(category => (
-          <div key={category.id} className="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-              <h5 className="mb-1">{category.name}</h5>
-              {category.description && 
-                <small className="text-muted">{category.description}</small>
-              }
+      <div className="card shadow-sm">
+        <div className="card-body">
+          <h3 className="mb-3">Existing Categories</h3>
+          {isLoading ? (
+            <div className="text-center py-4">Loading categories...</div>
+          ) : categories.length === 0 ? (
+            <div className="alert alert-info">No categories found</div>
+          ) : (
+            <div className="list-group">
+              {categories.map(category => (
+                <div key={category.id} className="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <h5 className="mb-1">{category.name}</h5>
+                    {category.description && 
+                      <small className="text-muted">{category.description}</small>
+                    }
+                  </div>
+                  <button
+                    className="btn btn-danger btn-sm pb-4"
+                    onClick={() => handleDelete(category.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
             </div>
-            <button
-              className="btn btn-danger btn-sm"
-              onClick={() => handleDelete(category.id)}
-            >
-              Delete
-            </button>
-          </div>
-        ))}
+          )}
+        </div>
       </div>
     </div>
   );

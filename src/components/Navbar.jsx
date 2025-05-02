@@ -28,7 +28,7 @@ export default function Navbar() {
         </button>
         <div className='collapse navbar-collapse' id='navbarNav'>
           <ul className='navbar-nav ms-auto'>
-            {!user && (
+            {!user ? (
               <>
                 <li className='nav-item'>
                   <Link to='/login' className='nav-link'>
@@ -41,9 +41,7 @@ export default function Navbar() {
                   </Link>
                 </li>
               </>
-            )}
-
-            {user && (
+            ) : (
               <>
                 <li className='nav-item'>
                   <Link to='/dashboard' className='nav-link'>
@@ -53,11 +51,6 @@ export default function Navbar() {
 
                 {user.role === 'ROLE_ADMIN' && (
                   <>
-                    <li className='nav-item'>
-                      <Link to='/admin/manage-orders' className='nav-link'>
-                        Manage Orders
-                      </Link>
-                    </li>
                     <li className='nav-item'>
                       <Link to='/admin/manage-categories' className='nav-link'>
                         Manage Categories
@@ -100,7 +93,7 @@ export default function Navbar() {
                     </li>
                     <li className='nav-item'>
                       <Link to='/freelancer/my-orders' className='nav-link'>
-                        Мои заказы
+                        My Orders
                       </Link>
                     </li>
                   </>

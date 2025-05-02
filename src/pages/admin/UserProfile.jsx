@@ -66,7 +66,7 @@ export default function UserProfile() {
                   {user.averageRating} ({user.ratingCount} reviews)
                 </dd>
               </dl>
-              <UserRatings userId={user.id} />
+              {user && <UserRatings userId={user.id} />}
             </div>
           </div>
         </div>

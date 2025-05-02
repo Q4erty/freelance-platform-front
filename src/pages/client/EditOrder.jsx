@@ -1,14 +1,11 @@
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { updateOrder } from '../../redux/dataSlice';
 
 export default function EditOrder() {
-  const { id } = useParams();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
+  const { id } = useParams();
+
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
@@ -17,174 +14,174 @@ export default function EditOrder() {
     categoryId: '',
     deadline: ''
   });
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchOrder = async () => {
       try {
-        const orderResponse = await fetch(`http://localhost:8000/api/orders/${id}`, {
+        const response = await fetch(`http://localhost:8000/api/orders/${id}`, {
           credentials: 'include'
         });
-        if (!orderResponse.ok) throw new Error('Order not found');
-        const orderData = await orderResponse.json();
-        console.log(orderData)
+        if (!response.ok) throw new Error('Failed to load order');
+        const data = await response.json();
 
-        const categoriesResponse = await fetch('http://localhost:8000/api/categories', {
-          credentials: 'include'
-        });
-        const categoriesData = await categoriesResponse.json();
-
-        setCategories(categoriesData);
         setFormData({
-          title: orderData.title,
-          description: orderData.description,
-          price: orderData.price,
-          categoryId: orderData.categoryId,
-          deadline: orderData.deadline.split('T')[0]
+          title: data.title || '',
+          description: data.description || '',
+          price: data.price || '',
+          categoryId: data.categoryId || '',
+          deadline: data.deadline ? data.deadline.split('T')[0] : ''
         });
-      } catch (error) {
-        toast.error(error.message);
-      } finally {
-        setLoading(false);
+      } catch (err) {
+        toast.error(err.message);
       }
     };
 
-    fetchData();
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/categories', {
+          credentials: 'include'
+        });
+        if (!response.ok) throw new Error('Failed to load categories');
+        const data = await response.json();
+        setCategories(data);
+      } catch (err) {
+        toast.error(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchOrder().then(fetchCategories);
   }, [id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
-
-    if (!user || (user.role !== 'ROLE_CLIENT' && user.role !== 'ROLE_ADMIN')) {
-      toast.error('Access denied');
-      return navigate('/');
-    }
+    setIsSubmitting(true);
 
     try {
       const response = await fetch(`http://localhost:8000/api/orders/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           ...formData,
-          price: Number(formData.price)
-        }),
-        credentials: 'include'
+          price: parseFloat(formData.price),
+        })
       });
 
       const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to update order');
 
-      if (!response.ok) throw new Error(data.message || 'Update failed');
-
-      dispatch(updateOrder(data));
       toast.success('Order updated successfully!');
-      
       navigate('/client/my-orders');
-    } catch (error) {
-      toast.error(error.message);
+    } catch (err) {
+      toast.error(err.message);
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  if (loading) return <div className="text-center my-4">Loading order data...</div>;
+  if (isLoading) {
+    return <div className="text-center mt-4">Loading order...</div>;
+  }
 
   return (
-    <div className='container my-4 d-flex justify-content-center'>
-      <div style={{ maxWidth: '600px', width: '100%' }}>
-        <h2 className='text-center mb-4'>Edit Order</h2>
-        
-        <form onSubmit={handleSubmit}>
-          <div className='mb-3'>
-            <label className='form-label'>Project Title</label>
-            <input
-              type='text'
-              name='title'
-              className='form-control'
-              value={formData.title}
-              onChange={handleChange}
-              required
-              minLength={5}
-              maxLength={100}
-            />
-          </div>
+    <div className="container py-5">
+      <div className="card shadow-sm mx-auto" style={{ maxWidth: '800px' }}>
+        <div className="card-body">
+          <h3 className="text-center mb-4">Edit Project</h3>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label className="form-label">Project Title</label>
+              <input
+                type="text"
+                className="form-control"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                required
+                minLength={5}
+                maxLength={100}
+              />
+            </div>
 
-          <div className='mb-3'>
-            <label className='form-label'>Description</label>
-            <textarea
-              name='description'
-              className='form-control'
-              rows={4}
-              value={formData.description}
-              onChange={handleChange}
-              required
-              minLength={20}
-              maxLength={1000}
-            />
-          </div>
+            <div className="mb-3">
+              <label className="form-label">Description</label>
+              <textarea
+                className="form-control"
+                rows={5}
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                required
+                minLength={20}
+                maxLength={1000}
+              />
+            </div>
 
-          <div className='mb-3'>
-            <label className='form-label'>Price (KZT)</label>
-            <input
-              type='number'
-              name='price'
-              className='form-control'
-              value={formData.price}
-              onChange={handleChange}
-              required
-              min={1000}
-              step={500}
-            />
-          </div>
+            <div className="row mb-3">
+              <div className="col-md-6">
+                <label className="form-label">Budget (KZT)</label>
+                <div className="input-group">
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    required
+                    min={1000}
+                    step={500}
+                  />
+                  <span className="input-group-text">KZT</span>
+                </div>
+              </div>
 
-          <div className='mb-3'>
-            <label className='form-label'>Category</label>
-            <select
-              name='categoryId'
-              className='form-control'
-              value={formData.categoryId}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select Category</option>
-              {categories.map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          </div>
+              <div className="col-md-6">
+                <label className="form-label">Deadline</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={formData.deadline}
+                  onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                  min={new Date().toISOString().split('T')[0]}
+                  required
+                />
+              </div>
+            </div>
 
-          <div className='mb-4'>
-            <label className='form-label'>Deadline</label>
-            <input
-              type='date'
-              name='deadline'
-              className='form-control'
-              value={formData.deadline}
-              onChange={handleChange}
-              min={new Date().toISOString().split('T')[0]}
-              required
-            />
-          </div>
+            <div className="mb-4">
+              <label className="form-label">Category</label>
+              <select
+                className="form-control"
+                value={formData.categoryId}
+                onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
+                required
+              >
+                <option value="">Select a category</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
 
-          <button 
-            type='submit' 
-            className='btn btn-primary w-100'
-            disabled={submitting}
-          >
-            {submitting ? 'Updating...' : 'Update Order'}
-          </button>
-        </form>
+            <div className="d-grid">
+              <button
+                type="submit"
+                className="btn btn-success btn-lg"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" />
+                    Saving...
+                  </>
+                ) : (
+                  'Save Changes'
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

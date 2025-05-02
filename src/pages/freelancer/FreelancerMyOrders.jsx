@@ -12,26 +12,28 @@ export default function FreelancerMyOrders() {
   const [canRate, setCanRate] = useState({});
   const [showCompleted, setShowCompleted] = useState(false);
 
+  // Check which orders can be rated
   useEffect(() => {
     const checkRatings = async () => {
-        const checks = await Promise.all(
-            orders.map(async order => {
-                if (order.status === 'COMPLETED') {
-                    const res = await fetch(
-                        `http://localhost:8000/api/ratings/check/${order.id}`,
-                        { credentials: 'include' }
-                    );
-                    return { id: order.id, canRate: await res.json() };
-                }
-                return { id: order.id, canRate: false };
-            })
-        );
-        setCanRate(checks.reduce((acc, curr) => 
-            ({ ...acc, [curr.id]: curr.canRate }), {}));
+      const checks = await Promise.all(
+        orders.map(async order => {
+          if (order.status === 'COMPLETED') {
+            const res = await fetch(
+              `http://localhost:8000/api/ratings/check/${order.id}`,
+              { credentials: 'include' }
+            );
+            return { id: order.id, canRate: await res.json() };
+          }
+          return { id: order.id, canRate: false };
+        })
+      );
+      setCanRate(checks.reduce((acc, curr) =>
+        ({ ...acc, [curr.id]: curr.canRate }), {}));
     };
     checkRatings();
   }, [orders]);
-  
+
+  // Load freelancer's orders
   useEffect(() => {
     const loadOrders = async () => {
       try {
@@ -40,7 +42,6 @@ export default function FreelancerMyOrders() {
         });
         const data = await response.json();
         console.log('Orders data:', data);
-        // Убираем фильтр по статусу
         setOrders(data.content.filter(order => order.freelancerId === user.id));
       } catch (err) {
         toast.error('Failed to load orders');
@@ -48,36 +49,35 @@ export default function FreelancerMyOrders() {
         setLoading(false);
       }
     };
-    
+
     if (user?.id) loadOrders();
   }, [user]);
 
-  // Фильтруем заказы по статусу
-  const filteredOrders = orders.filter(order => 
-    showCompleted 
-      ? order.status === 'COMPLETED' 
+  // Filter orders by status
+  const filteredOrders = orders.filter(order =>
+    showCompleted
+      ? order.status === 'COMPLETED'
       : order.status === 'IN_PROGRESS'
   );
 
+  // Handle order completion
   const handleComplete = async (orderId) => {
-    if (!window.confirm('Вы уверены что хотите завершить заказ?')) return;
-    
+    if (!window.confirm('Are you sure you want to complete this order?')) return;
+
     try {
       const response = await fetch(`http://localhost:8000/api/orders/${orderId}/complete`, {
         method: 'PATCH',
         credentials: 'include'
       });
 
-      if (!response.ok) throw new Error('Ошибка завершения заказа');
-      
-      setOrders(orders.map(order => 
-        order.id === orderId ? { 
-          ...order, 
-          freelancerConfirmed: true,
-          status: 'COMPLETED' // Обновляем статус локально
-        } : order
+      if (!response.ok) throw new Error('Failed to complete the order');
+
+      setOrders(orders.map(order =>
+        order.id === orderId
+          ? { ...order, freelancerConfirmed: true, status: 'COMPLETED' }
+          : order
       ));
-      toast.success('Заказ отправлен на подтверждение клиенту');
+      toast.success('Order sent for client confirmation');
     } catch (err) {
       toast.error(err.message);
     }
@@ -88,19 +88,21 @@ export default function FreelancerMyOrders() {
   return (
     <div className="container my-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>Мои заказы</h2>
+        <h2>My Orders</h2>
         <div className="btn-group">
-          <button 
+          <button
             className={`btn ${!showCompleted ? 'btn-primary' : 'btn-outline-primary'}`}
             onClick={() => setShowCompleted(false)}
+            style={{ width: '120px', height: '60px' }}
           >
-            Активные
+            Active
           </button>
-          <button 
+          <button
             className={`btn ${showCompleted ? 'btn-primary' : 'btn-outline-primary'}`}
             onClick={() => setShowCompleted(true)}
+            style={{ width: '120px', height: '60px' }}
           >
-            Завершённые
+            Completed
           </button>
         </div>
       </div>
@@ -112,52 +114,52 @@ export default function FreelancerMyOrders() {
               <div className="card-body">
                 <h5 className="card-title">{order.title}</h5>
                 <p className="card-text text-muted small">{order.description}</p>
-                
+
                 <div className="mt-2">
                   <span className={`badge bg-${order.status === 'COMPLETED' ? 'success' : 'primary'}`}>
-                    {order.status === 'COMPLETED' ? 'Завершён' : 'Активен'}
+                    {order.status === 'COMPLETED' ? 'Completed' : 'In Progress'}
                   </span>
                   <span className="ms-2 text-muted">
                     {new Date(order.deadline).toLocaleDateString()}
                   </span>
                 </div>
               </div>
-              
+
               <div className="card-footer bg-transparent">
                 <div className="d-flex justify-content-between align-items-center">
                   <span className="fw-bold text-success">
                     {order.price} KZT
                   </span>
                   {order.status === 'IN_PROGRESS' ? (
-                    <button 
+                    <button
                       className={`btn btn-${order.freelancerConfirmed ? 'success' : 'primary'}`}
                       onClick={() => handleComplete(order.id)}
                       disabled={order.freelancerConfirmed}
                     >
-                      {order.freelancerConfirmed ? 'Ожидает подтверждения' : 'Завершить заказ'}
+                      {order.freelancerConfirmed ? 'Awaiting client' : 'Mark as Completed'}
                     </button>
                   ) : (
                     <div>
                       {order.status === 'COMPLETED' && canRate[order.id] && (
-                          <button 
-                              className="btn btn-info btn-sm"
-                              onClick={() => setSelectedOrder(order.id)}
-                          >
-                              Rate Order
-                          </button>
+                        <button
+                          className="btn btn-info btn-sm"
+                          onClick={() => setSelectedOrder(order.id)}
+                        >
+                          Rate Order
+                        </button>
                       )}
 
                       {selectedOrder && (
-                          <RatingModal
-                              orderId={selectedOrder}
-                              onClose={() => setSelectedOrder(null)}
-                              onRate={() => setCanRate(prev => ({
-                                  ...prev, 
-                                  [selectedOrder]: false
-                              }))}
-                          />
+                        <RatingModal
+                          orderId={selectedOrder}
+                          onClose={() => setSelectedOrder(null)}
+                          onRate={() => setCanRate(prev => ({
+                            ...prev,
+                            [selectedOrder]: false
+                          }))}
+                        />
                       )}
-                  </div>
+                    </div>
                   )}
                 </div>
               </div>
@@ -168,9 +170,9 @@ export default function FreelancerMyOrders() {
 
       {filteredOrders.length === 0 && (
         <div className="alert alert-info mt-4">
-          {showCompleted 
-            ? "Нет завершённых заказов" 
-            : "Нет активных заказов"}
+          {showCompleted
+            ? "No completed orders found"
+            : "No active orders available"}
         </div>
       )}
     </div>

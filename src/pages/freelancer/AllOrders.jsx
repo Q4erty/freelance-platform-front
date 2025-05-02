@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 export default function AllOrders() {
@@ -9,55 +8,75 @@ export default function AllOrders() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(true);
+  const [submittedApplications, setSubmittedApplications] = useState([]); // New state
   const { user } = useSelector(state => state.auth);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const loadData = async () => {
+    const fetchOrders = async () => {
       try {
-        // Загрузка заказов
-        const ordersResponse = await fetch('http://localhost:8000/api/orders', {
-          credentials: 'include'
-        });
-        const ordersData = await ordersResponse.json();
-        const availableOrders = ordersData.content.filter(order => order.freelancerId === null);
-
-        const categoriesResponse = await fetch('http://localhost:8000/api/categories', {
-          credentials: 'include'
-        });
-        const categoriesData = await categoriesResponse.json();
-
+        const res = await fetch('http://localhost:8000/api/orders', { credentials: 'include' });
+        const data = await res.json();
+        const availableOrders = data.content.filter(order => order.freelancerId === null);
         setOrders(availableOrders);
-        setCategories(categoriesData);
       } catch (err) {
-        toast.error('Failed to load data');
-      } finally {
-        setLoading(false);
+        toast.error('Failed to load orders');
       }
     };
+
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('http://localhost:8000/api/categories', { credentials: 'include' });
+        const data = await res.json();
+        setCategories(data);
+      } catch (err) {
+        toast.error('Failed to load categories');
+      }
+    };
+
+    const loadData = async () => {
+      await fetchOrders();
+      await fetchCategories();
+      setLoading(false);
+    };
+
     loadData();
   }, []);
 
+  useEffect(() => {
+    const fetchSubmittedApplications = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/api/applications/freelancer/${user.id}`, { credentials: 'include' });
+        const data = await res.json();
+        setSubmittedApplications(data.map(application => application.orderId));
+      } catch (err) {
+        toast.error('Failed to load submitted applications');
+      }
+    };
+
+    if (user?.id) {
+      fetchSubmittedApplications();
+    }
+  }, [user]);
+
   const handleApply = async (orderId) => {
     if (!window.confirm('Submit application for this order?')) return;
-    
+
     try {
-      const response = await fetch('http://localhost:8000/api/applications', {
+      const res = await fetch('http://localhost:8000/api/applications', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           orderId,
           proposal: `Application from ${user.username}`
-        }),
-        credentials: 'include'
+        })
       });
 
-      if (!response.ok) throw new Error('Application failed');
-      
+      if (!res.ok) throw new Error('Application failed');
+
       toast.success('Application submitted!');
-      setOrders(orders.filter(order => order.id !== orderId));
+      setOrders(prev => prev.filter(order => order.id !== orderId));
+      setSubmittedApplications(prev => [...prev, orderId]);
     } catch (err) {
       toast.error(err.message);
     }
@@ -65,10 +84,11 @@ export default function AllOrders() {
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = order.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory ? 
-      order.categoryId.toString() === selectedCategory : true;
-    return matchesSearch && matchesCategory;
+      order.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory ? order.categoryId.toString() === selectedCategory : true;
+    const isAlreadyApplied = submittedApplications.includes(order.id);
+
+    return matchesSearch && matchesCategory && !isAlreadyApplied;
   });
 
   if (loading) return <div className="text-center my-4">Loading orders...</div>;
@@ -76,8 +96,7 @@ export default function AllOrders() {
   return (
     <div className="container my-4">
       <h2 className="mb-4">Available Orders</h2>
-      
-      {/* Фильтры */}
+
       <div className="row mb-4 g-3">
         <div className="col-md-6">
           <input
@@ -102,7 +121,6 @@ export default function AllOrders() {
         </div>
       </div>
 
-      {/* Список заказов */}
       <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         {filteredOrders.map(order => (
           <div key={order.id} className="col">
@@ -114,7 +132,7 @@ export default function AllOrders() {
                 </h6>
                 <p className="card-text text-muted small">{order.description}</p>
               </div>
-              
+
               <div className="card-footer bg-transparent">
                 <div className="d-flex justify-content-between align-items-center">
                   <span className="badge bg-primary">
@@ -127,7 +145,7 @@ export default function AllOrders() {
               </div>
 
               <div className="card-footer d-grid">
-                <button 
+                <button
                   className="btn btn-outline-success"
                   onClick={() => handleApply(order.id)}
                 >

@@ -5,7 +5,6 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import ManageOrders from './pages/admin/ManageOrders';
 import MyOrders from './pages/client/MyOrders';
 import CreateOrder from './pages/client/CreateOrder';
 import AllOrders from './pages/freelancer/AllOrders';
@@ -33,11 +32,6 @@ export default function App() {
           <Route path='/register' element={<Register />} />
 
           <Route path='/dashboard' element={<Dashboard />} />
-
-          <Route
-            path='/admin/manage-orders'
-            element={userRole === 'ROLE_ADMIN' ? <ManageOrders /> : <Navigate to='/dashboard' />}
-          />
 
           <Route
             path='/client/my-orders'

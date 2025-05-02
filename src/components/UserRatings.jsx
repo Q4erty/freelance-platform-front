@@ -40,8 +40,9 @@ export default function UserRatings({ userId, title = 'My Reviews' }) {
           <div className="ratings-list">
             {ratings.map(rating => (
               <div key={rating.id} className="rating-item">
+                <hr />
                 <div className="rating-header">
-                  <span className="stars">
+                  <span className="stars text-warning">
                     {'★'.repeat(rating.score)}{'☆'.repeat(5 - rating.score)}
                   </span>
                   <span className="date">
