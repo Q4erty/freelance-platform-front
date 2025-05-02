@@ -15,6 +15,7 @@ import ManageCategories from './pages/admin/ManageCategories';
 import ManageUsers from './pages/admin/ManageUsers';
 import UserProfile from './pages/admin/UserProfile';
 import OrderApplications from './pages/client/OrderApplications';
+import FreelancerMyOrders from './pages/freelancer/FreelancerMyOrders';
 
 export default function App() {
   const user = useSelector((state) => state.auth.user);
@@ -71,6 +72,10 @@ export default function App() {
           <Route 
             path="/orders/:orderId/applications" 
             element={<OrderApplications />}
+          />
+          <Route
+            path='/freelancer/my-orders'
+            element={userRole === 'ROLE_FREELANCER' ? <FreelancerMyOrders /> : <Navigate to='/dashboard' />}
           />
         </Routes>
       </div>

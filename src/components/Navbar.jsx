@@ -98,6 +98,11 @@ export default function Navbar() {
                         My Applications
                       </Link>
                     </li>
+                    <li className='nav-item'>
+                      <Link to='/freelancer/my-orders' className='nav-link'>
+                        Мои заказы
+                      </Link>
+                    </li>
                   </>
                 )}
 

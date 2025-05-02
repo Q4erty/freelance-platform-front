@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import UserRatings from '../components/UserRatings';
 
 export default function Home() {
   const user = useSelector((state) => state.auth.user);
@@ -19,7 +20,6 @@ export default function Home() {
                   fontWeight: 'bold',
                 }}
               >
-                {/* Image or initial letter */}
                 {user.avatarPath ? (
                   <img
                     src={`http://localhost:8000/avatars/${user.avatarPath}`}
@@ -79,6 +79,7 @@ export default function Home() {
           <button className="btn btn-outline-primary btn-lg">Get Started</button>
         </div>
       )}
+      <UserRatings userId={user.id} />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import UserRatings from '../../components/UserRatings';
 
 export default function UserProfile() {
   const { userId } = useParams();
@@ -65,6 +66,7 @@ export default function UserProfile() {
                   {user.averageRating} ({user.ratingCount} reviews)
                 </dd>
               </dl>
+              <UserRatings userId={user.id} />
             </div>
           </div>
         </div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import RatingModal from '../../components/RatingModal';
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
@@ -9,6 +10,28 @@ export default function MyOrders() {
   const { user } = useSelector(state => state.auth);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [canRate, setCanRate] = useState({});
+
+  useEffect(() => {
+      const checkRatings = async () => {
+          const checks = await Promise.all(
+              orders.map(async order => {
+                  if (order.status === 'COMPLETED') {
+                      const res = await fetch(
+                          `http://localhost:8000/api/ratings/check/${order.id}`,
+                          { credentials: 'include' }
+                      );
+                      return { id: order.id, canRate: await res.json() };
+                  }
+                  return { id: order.id, canRate: false };
+              })
+          );
+          setCanRate(checks.reduce((acc, curr) => 
+              ({ ...acc, [curr.id]: curr.canRate }), {}));
+      };
+      checkRatings();
+  }, [orders]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -39,8 +62,28 @@ export default function MyOrders() {
     loadData();
   }, []);
 
+  const handleConfirmCompletion = async (orderId) => {
+    if (!window.confirm('Подтвердить завершение заказа?')) return;
+    
+    try {
+      const response = await fetch(`http://localhost:8000/api/orders/${orderId}/complete`, {
+        method: 'PATCH',
+        credentials: 'include'
+      });
+  
+      if (!response.ok) throw new Error('Ошибка подтверждения');
+      
+      setOrders(orders.map(order => 
+        order.id === orderId ? { ...order, clientConfirmed: true, status: 'COMPLETED' } : order
+      ));
+      toast.success('Заказ успешно завершен');
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
   const filteredOrders = orders.filter(order => 
-    selectedCategory ? order.categoryId === selectedCategory : true
+    selectedCategory ? order.categoryId === Number(selectedCategory) : true
   );
 
   const handleDelete = async (orderId) => {
@@ -132,14 +175,14 @@ export default function MyOrders() {
                   </span>
                 </div>
                 <div className="mt-2">
-                  <span className={`badge ${getStatusBadgeClass(order.status)}`}>
+                  <span className={`badge ${getStatusBadgeClass(order)}`}>
                     {order.status}
                   </span>
                 </div>
               </div>
 
               <div className="card-footer d-grid gap-2">
-                {!order.freelancer ? (
+                {!order.freelancerId ? (
                   <>
                     <Link 
                       to={`/orders/${order.id}/applications`}
@@ -161,13 +204,36 @@ export default function MyOrders() {
                     </button>
                   </>
                 ) : (
-                  order.status === 'IN_PROGRESS' && (
-                    <button
-                      className="btn btn-success btn-sm"
-                      onClick={() => handleCompleteOrder(order.id)}
-                    >
-                      Mark as Completed
-                    </button>
+                  order.freelancerConfirmed && (
+                    <>
+                      {order.freelancerConfirmed && !order.clientConfirmed && (
+                        <button
+                          className="btn btn-success btn-sm"
+                          onClick={() => handleConfirmCompletion(order.id)}
+                        >
+                          Подтвердить завершение
+                        </button>
+                      )}
+                      {order.status === 'COMPLETED' && canRate[order.id] && (
+                          <button 
+                              className="btn btn-info btn-sm"
+                              onClick={() => setSelectedOrder(order.id)}
+                          >
+                              Rate Order
+                          </button>
+                      )}
+
+                      {selectedOrder && (
+                          <RatingModal
+                              orderId={selectedOrder}
+                              onClose={() => setSelectedOrder(null)}
+                              onRate={() => setCanRate(prev => ({
+                                  ...prev, 
+                                  [selectedOrder]: false
+                              }))}
+                          />
+                      )}
+                    </>
                   )
                 )}
               </div>
@@ -185,10 +251,15 @@ export default function MyOrders() {
   );
 }
 
-const getStatusBadgeClass = (status) => {
-  switch(status) {
+const getStatusBadgeClass = (order) => {
+  switch(order.status) {
     case 'COMPLETED': return 'bg-success';
-    case 'IN_PROGRESS': return 'bg-warning text-dark';
+    case 'IN_PROGRESS':
+      return order.clientConfirmed 
+        ? 'bg-success' 
+        : order.freelancerConfirmed 
+          ? 'bg-info' 
+          : 'bg-warning text-dark';
     case 'CANCELLED': return 'bg-danger';
     default: return 'bg-secondary';
   }

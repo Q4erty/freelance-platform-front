@@ -19,7 +19,7 @@ export default function MyApplications() {
         if (!response.ok) throw new Error('Failed to load applications');
         
         const data = await response.json();
-        console.log('Applications data:', data); // Для диагностики
+        console.log('Applications data:', data);
         setApplications(data);
       } catch (err) {
         toast.error(err.message);
@@ -35,8 +35,8 @@ export default function MyApplications() {
     if (!window.confirm('Are you sure you want to cancel this application?')) return;
     
     try {
-      const response = await fetch(`http://localhost:8000/api/applications/${applicationId}`, {
-        method: 'DELETE',
+      const response = await fetch(`http://localhost:8000/api/applications/${applicationId}/cancel`, {
+        method: 'PATCH',
         credentials: 'include'
       });
 
@@ -52,6 +52,28 @@ export default function MyApplications() {
   const filteredApplications = applications.filter(app => 
     selectedStatus === 'ALL' || app.status === selectedStatus
   );
+
+  const handleCompleteOrder = async (orderId) => {
+    if (!window.confirm('Вы уверены что хотите завершить заказ?')) return;
+    
+    try {
+      const response = await fetch(`http://localhost:8000/api/orders/${orderId}/complete`, {
+        method: 'PATCH',
+        credentials: 'include'
+      });
+
+      if (!response.ok) throw new Error('Ошибка завершения заказа');
+      
+      setApplications(applications.map(app => 
+        app.order?.id === orderId 
+          ? { ...app, order: { ...app.order, freelancerConfirmed: true } } 
+          : app
+      ));
+      toast.success('Заказ отправлен на подтверждение клиенту');
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
 
   if (loading) return <div className="text-center my-4">Loading applications...</div>;
 
@@ -81,7 +103,6 @@ export default function MyApplications() {
               <div className="card-body">
                 <div className="d-flex justify-content-between align-items-start">
                   <div>
-                    {/* Добавляем проверку на существование order */}
                     {application.order ? (
                       <h5>
                         <Link 
@@ -114,11 +135,20 @@ export default function MyApplications() {
                         Cancel
                       </button>
                     )}
+                    {console.log('Application status:', application.status)}
+                    {console.log('Order status:', application.order?.status)}
+                    {application.status === 'ACCEPTED' && application.order?.status === 'IN_PROGRESS' && (
+                      <button
+                        className="btn btn-success btn-sm"
+                        onClick={() => handleCompleteOrder(application.order.id)}
+                      >
+                        Завершить заказ
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
               
-              {/* Добавляем проверку на существование order */}
               {application.order && (
                 <div className="card-footer bg-transparent">
                   <div className="d-flex justify-content-between">
