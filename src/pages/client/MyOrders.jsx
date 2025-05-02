@@ -1,135 +1,195 @@
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { deleteOrder, setOrders } from '../../redux/dataSlice';
-import { setCategories } from '../../redux/categorySlice';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function MyOrders() {
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useSelector(state => state.auth);
   const [selectedCategory, setSelectedCategory] = useState('');
-
-  const categories = useSelector((state) => state.categories.categories);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const ordersRes = await fetch('http://localhost:3001/orders');
-        const ordersData = await ordersRes.json();
-        dispatch(setOrders(ordersData));
+        const ordersResponse = await fetch(`http://localhost:8000/api/orders`, {
+          credentials: 'include'
+        });
+        
+        if (!ordersResponse.ok) throw new Error('Failed to load orders');
+        const ordersData = await ordersResponse.json();
+        const userOrders = ordersData.content.filter(order => order.clientId === user.id);
+        console.log(userOrders);
 
-        const categoriesRes = await fetch('http://localhost:3001/categories');
-        const categoriesData = await categoriesRes.json();
-        dispatch(setCategories(categoriesData));
+        const categoriesResponse = await fetch('http://localhost:8000/api/categories', {
+          credentials: 'include'
+        });
+        const categoriesData = await categoriesResponse.json();
+
+        setOrders(userOrders);
+        setCategories(categoriesData);
       } catch (err) {
-        console.error('Loading error:', err);
+        toast.error(err.message);
+      } finally {
+        setLoading(false);
       }
     };
+    
     loadData();
-  }, [dispatch]);
+  }, []);
 
-  const creatorId = user?.id;
-  const allOrders = useSelector((state) => state.data.orders);
-  console.log(allOrders);
-  const creatorOrders = allOrders.filter(order => 
-    order.clientId === creatorId && 
-    order.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (selectedCategory ? order.categoryId === selectedCategory : true)
+  const filteredOrders = orders.filter(order => 
+    selectedCategory ? order.categoryId === selectedCategory : true
   );
-  console.log(creatorOrders);
-
-  const filteredOrders = creatorOrders.filter(order => {
-    const matchesSearch = order.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory ? order.categoryId === selectedCategory : true;
-    return matchesSearch && matchesCategory;
-  });
 
   const handleDelete = async (orderId) => {
+    if (!window.confirm('Are you sure you want to delete this order?')) return;
+    
     try {
-      const response = await fetch(`http://localhost:3001/orders/${orderId}`, {
-        method: 'DELETE'
+      const response = await fetch(`http://localhost:8000/api/orders/${orderId}`, {
+        method: 'DELETE',
+        credentials: 'include'
       });
-      if (response.ok) {
-        dispatch(deleteOrder(orderId));
-      }
-    } catch (error) {
-      console.log('MyOrders.jsx errored deleting order');
+
+      if (!response.ok) throw new Error('Failed to delete order');
+      
+      setOrders(orders.filter(order => order.id !== orderId));
+      toast.success('Order deleted successfully');
+    } catch (err) {
+      toast.error(err.message);
     }
   };
 
+  const handleCompleteOrder = async (orderId) => {
+    if (!window.confirm('Mark this order as completed?')) return;
+    
+    try {
+      const response = await fetch(`http://localhost:8000/api/orders/${orderId}/complete`, {
+        method: 'PUT',
+        credentials: 'include'
+      });
+
+      if (!response.ok) throw new Error('Failed to complete order');
+      
+      setOrders(orders.map(order => 
+        order.id === orderId ? { ...order, status: 'COMPLETED' } : order
+      ));
+      toast.success('Order marked as completed');
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+  if (loading) return <div className="text-center my-4">Loading orders...</div>;
+
   return (
-    <div className='container my-4'>
-      <div className="mb-4">
-        <div className="row g-3">
-          <div className="col-md-6">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search orders..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-6">
-            <select
-              className="form-select"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-            >
-              <option value="">All Categories</option>
-              {categories.map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          </div>
+    <div className="container my-4">
+      <h2 className="mb-4">My Orders</h2>
+      
+      <div className="row mb-4 g-3">
+        <div className="col-md-6">
+          <select
+            className="form-select"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <option value="">All Categories</option>
+            {categories.map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
         </div>
       </div>
-      <h2 className='mb-4'>My Orders</h2>
-      <div className='row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4'>
-        {filteredOrders.map((order) => (
-          <div key={order.id} className='col'>
-            <div className='card h-100 shadow-sm'>
-              <div className='card-body'>
-                <h5 className='card-title'>{order.title}</h5>
-                <h6 className='card-subtitle mb-2 text-muted'>
-                  Category: {categories.find(c => c.id === order.categoryId)?.name || 'Unknown'}
+
+      <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {filteredOrders.map(order => (
+          <div key={order.id} className="col">
+            <div className="card h-100 shadow-sm">
+              <div className="card-body">
+                <h5 className="card-title">{order.title}</h5>
+                <h6 className="card-subtitle mb-2 text-muted">
+                  {categories.find(c => c.id === order.categoryId)?.name || 'Unknown Category'}
                 </h6>
-                <span className={`badge ${order.freelancerId ? 'bg-warning text-dark' : 'bg-success'}`}>
-                  {order.freelancerId ? 'In Progress' : 'Waiting Freelancer'}
-                </span>
-                <p className='card-text mt-2'>{order.description}</p>
+                <p className="card-text text-muted small">{order.description}</p>
+                
+                {order.freelancer && (
+                  <div className="mt-2">
+                    <span className="badge bg-info">
+                      Assigned to: {order.freelancer.username}
+                    </span>
+                  </div>
+                )}
               </div>
-              <div className='card-footer d-flex justify-content-between'>
-                <span className='fw-bold'>{order.price} KZT</span>
-                <small className='text-muted'>Deadline: {order.deadline}</small>
+              
+              <div className="card-footer bg-transparent">
+                <div className="d-flex justify-content-between align-items-center">
+                  <span className="badge bg-primary">
+                    {new Date(order.deadline).toLocaleDateString()}
+                  </span>
+                  <span className="fw-bold text-success">
+                    {order.price} KZT
+                  </span>
+                </div>
+                <div className="mt-2">
+                  <span className={`badge ${getStatusBadgeClass(order.status)}`}>
+                    {order.status}
+                  </span>
+                </div>
               </div>
-              {!order.freelancerId && (
-                <div className='card-footer d-flex p-0'>
-                  <Link
-                    to={`/client/edit-order/${order.id}`}
-                    className='btn btn-outline-primary w-50 rounded-0 border-end'>
-                    Edit
-                  </Link>
-                  <button onClick={() => handleDelete(order.id)} className='btn btn-outline-danger w-50 rounded-0'>
-                    Delete
-                  </button>
-                </div>
-              )}
-              {order.freelancerId && (
-                <div className='card-footer d-flex p-0'>
-                  <button 
-                    className='btn btn-outline-info w-100 rounded-0'
-                    disabled
-                  >
-                    Open Chat
-                  </button>
-                </div>
-              )}
+
+              <div className="card-footer d-grid gap-2">
+                {!order.freelancer ? (
+                  <>
+                    <Link 
+                      to={`/orders/${order.id}/applications`}
+                      className="btn btn-outline-info btn-sm"
+                    >
+                      Applications
+                    </Link>
+                    <Link
+                      to={`/client/edit-order/${order.id}`}
+                      className="btn btn-outline-primary btn-sm"
+                    >
+                      Edit
+                    </Link>
+                    <button 
+                      onClick={() => handleDelete(order.id)}
+                      className="btn btn-outline-danger btn-sm"
+                    >
+                      Delete
+                    </button>
+                  </>
+                ) : (
+                  order.status === 'IN_PROGRESS' && (
+                    <button
+                      className="btn btn-success btn-sm"
+                      onClick={() => handleCompleteOrder(order.id)}
+                    >
+                      Mark as Completed
+                    </button>
+                  )
+                )}
+              </div>
             </div>
           </div>
         ))}
       </div>
+
+      {filteredOrders.length === 0 && (
+        <div className="alert alert-info mt-4">
+          No orders found. Create your first order!
+        </div>
+      )}
     </div>
   );
 }
+
+const getStatusBadgeClass = (status) => {
+  switch(status) {
+    case 'COMPLETED': return 'bg-success';
+    case 'IN_PROGRESS': return 'bg-warning text-dark';
+    case 'CANCELLED': return 'bg-danger';
+    default: return 'bg-secondary';
+  }
+};

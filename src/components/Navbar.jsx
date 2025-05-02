@@ -51,7 +51,7 @@ export default function Navbar() {
                   </Link>
                 </li>
 
-                {user.role === 'admin' && (
+                {user.role === 'ROLE_ADMIN' && (
                   <>
                     <li className='nav-item'>
                       <Link to='/admin/manage-orders' className='nav-link'>
@@ -63,10 +63,15 @@ export default function Navbar() {
                         Manage Categories
                       </Link>
                     </li>
+                    <li className='nav-item'>
+                      <Link to='/admin/manage-users' className='nav-link'>
+                        Manage Users
+                      </Link>
+                    </li>
                   </>
                 )}
 
-                {user.role === 'client' && (
+                {user.role === 'ROLE_CLIENT' && (
                   <>
                     <li className='nav-item'>
                       <Link to='/client/my-orders' className='nav-link'>
@@ -81,7 +86,7 @@ export default function Navbar() {
                   </>
                 )}
 
-                {user.role === 'freelancer' && (
+                {user.role === 'ROLE_FREELANCER' && (
                   <>
                     <li className='nav-item'>
                       <Link to='/freelancer/all-orders' className='nav-link'>

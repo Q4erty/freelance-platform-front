@@ -45,26 +45,25 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const userData = await fetch(`http://localhost:3001/users?email=${email}&password=${password}`);
-    if (userData.ok) {
-      const users = await userData.json();
-      const user = users[0];
+    try {
+      const response = await fetch('http://localhost:8000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include'
+      });
 
-      if (user) {
-        if (user.role === 'admin' || user.role === 'freelancer') {
-          await loadAllOrders();
-        } else if (user.role === 'client') {
-          await loadOrders(user.id);
-        }
-
-        toast.success(`Welcome back, ${user.name}!`);
+      if (response.ok) {
+        const user = await response.json();
+        console.log(user);
         dispatch(login(user));
         navigate('/dashboard');
       } else {
-        toast.error('Invalid credentials');
+        const error = await response.json();
+        toast.error(error.message);
       }
-    } else {
-      toast.error('Invalid credentials');
+    } catch (err) {
+      toast.error('Connection error');
     }
   };
 
